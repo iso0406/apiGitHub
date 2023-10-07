@@ -15,7 +15,17 @@ class ApiGitHubService {
 
     public function show(string $user) 
     {
-        dd('aqui services');
+        $data = $this->apiGitRepository->show($user);
+
+        if (isset($data)) {
+            return $data;
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Registro não encontrado !',
+                ]
+            ); 
+        };
     }
 
 }
