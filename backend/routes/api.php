@@ -18,4 +18,5 @@ Route::fallback(function () {
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/getUser/{user}',[ApiGithubController::class, 'show']);
+    Route::get('/getFollowers/{user}',[ApiGithubController::class, 'getFollowers']);
 });

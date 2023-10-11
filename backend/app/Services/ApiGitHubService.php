@@ -17,15 +17,29 @@ class ApiGitHubService {
     {
         $data = $this->apiGitRepository->show($user);
 
-        if (isset($data)) {
-            return $data;
+        if ($data->successful()) {
+            return $data->json();
         } else {
             return response()->json([
                 'status' => 404,
                 'message' => 'Registro não encontrado !',
                 ]
-            ); 
-        };
+            );
+        }
     }
 
+    public function getFollowers(string $user)
+    {
+        $data = $this->apiGitRepository->getFollowers($user);
+
+        if ($data->successful()) {
+            return $data->json();
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Registro não encontrado !',
+                ]
+            );
+        }
+    }
 }
