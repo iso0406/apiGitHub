@@ -1,5 +1,10 @@
 <template>
   <PreloaderComponente :preloader="loading"/>
+  <ModalBio 
+    :modal="modalOpen"
+    :additionalData="getUserModal"
+    @close-modal="modalOpen = false"
+  />
   <main>
     <div class="mt-12 mb-2">
       <h3 class="text-3xl font-medium leading-5 text-blue-900">
@@ -31,6 +36,8 @@
         </button>
       </div>
     </form>
+    
+    
     <div v-if="getUser">
       <div class="bg-gray-100 p-7 flex flex-row border border-blue-200 rounded-md">
         <div class="w-40 h-40 rounded-full border-4 border-orange-500">
@@ -41,7 +48,7 @@
             Dados do Usuário
           </h3>
           <div class="grid grid-cols-2 gap-4 w-full">
-            <div class="bg-white border border-blue-200 rounded-md p-4">
+            <div class="bg-blue-300 border-6 border-blue-700 rounded-md p-4 shadow-sm">
               <p><span class="font-bold">Nome: </span> {{ getUser.data.name ? getUser.data.name : 'Não Informado !' }}</p>
               <p><span class="font-bold">Username: </span> {{ getUser.data.login ? getUser.data.login : 'Não Informado !' }}</p>
               <p>
@@ -63,7 +70,7 @@
                 </a>
               </p>
             </div>
-            <div class="bg-white border border-blue-200 rounded-md p-4 ml-7 w-full">
+            <div class="bg-blue-300 border-6 border-blue-700 rounded-md p-4 ml-7 w-full shadow-sm">
               <p><span class="font-bold">Empresa: </span> {{ getUser.data.company ? getUser.data.company : 'Não Informado !' }}</p>
               <p><span class="font-bold">Localização: </span> {{ getUser.data.location ? getUser.data.location : 'Não Informado !' }}</p>
               <p><span class="font-bold">Repositórios Públicos: </span> {{ getUser.data.public_repos ? getUser.data.public_repos : 'Não Informado !' }}</p>
@@ -73,16 +80,23 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class="flex space-x-4 mt-5 mb-5">
         <button
           type="button"
           @click="getFollowersUser(getUser.data.login)"
-          class="flex items-center py-2 px-6 shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-5 mb-5"
+          class="flex items-center py-2 px-6 shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
-          <i class="fas fa-user text-1xl mr-2"></i>Seguidores de: {{ getUser.data.login }}
+          <i class="fas fa-user-friends text-1xl mr-2"></i>Seguidores de: {{ getUser.data.login }}
+        </button>
+        <button
+          type="button"
+          @click="mostrarModal"
+          class="flex items-center py-2 px-6 shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <i class="fas fa-user text-1xl mr-2"></i>Visualizar Bio
         </button>
       </div>
-  
+      
       <table class="min-w-full border text-center text-sm font-light dark:border-neutral-500 shadow-md display hover mt-4" 
         id="datatable" 
         style="width: 100%"
@@ -125,8 +139,7 @@
 <script>
 import ApiGitService from "../../services/apiGitUser.service";
 import PreloaderComponente from "../../components/preloader/PreloaderComponent.vue";
-import { mask } from "vue-the-mask";
-import router from "@/router";
+import ModalBio from "../modal/Modal.vue";
 import "jquery/dist/jquery.min.js";
 import "datatables.net-dt/js/dataTables.dataTables";
 import "datatables.net-dt/css/jquery.dataTables.min.css";
@@ -135,6 +148,7 @@ import $ from "jquery";
 export default {
   components: {
     PreloaderComponente,
+    ModalBio,
   },
   data() {
     return {
@@ -146,6 +160,9 @@ export default {
       showContent: {
               'dropdown-1': false
       },
+      modalOpen: false,
+      getUserModal: false,
+      additionalData: false,
     };
   },
   methods: {
@@ -160,6 +177,8 @@ export default {
           const response = await ApiGitService.getUser(user);
           
           this.getUser = response;
+          this.getUserModal = response.data;
+  
           this.loading = false;
 
         } catch (error) {
@@ -183,8 +202,12 @@ export default {
               responsive: true,
             });
       });
-          
-      console.log(this.getFollowers);
+    },
+    mostrarModal() {
+      this.modalOpen = true;
+    },
+    fecharModal() {
+      this.modalOpen = false;
     },
     reloadPage() {
       window.location.reload();
@@ -195,10 +218,5 @@ export default {
 </script>
 
 <style scoped>
-    .slide-enter-active, .slide-leave-active {
-    transition: opacity 0.5s ease;
-    }
-    .slide-enter, .slide-leave-to {
-    opacity: 0;
-    }
+
 </style>
